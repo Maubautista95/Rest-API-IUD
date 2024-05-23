@@ -1,0 +1,68 @@
+// routes/universidad.js
+
+const express = require('express');
+const router = express.Router();
+const Universidad = require('../models/universidad');
+
+// Crear una nueva universidad
+router.post('/post', async (req, res) => {
+  const data = new Universidad({
+    nombre: req.body.nombre,
+    direccion: req.body.direccion,
+    telefono: req.body.telefono
+  });
+
+  try {
+    const dataToSave = await data.save();
+    res.status(200).json(dataToSave);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Obtener todas las universidades
+router.get('/getAll', async (req, res) => {
+  try {
+    const data = await Universidad.find();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Obtener una universidad por ID
+router.get('/getOne/:id', async (req, res) => {
+  try {
+    const data = await Universidad.findById(req.params.id);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Actualizar una universidad por ID
+router.patch('/update/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const options = { new: true };
+
+    const result = await Universidad.findByIdAndUpdate(id, updatedData, options);
+    res.send(result);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Eliminar una universidad por ID
+router.delete('/delete/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const data = await Universidad.findByIdAndDelete(id);
+    res.send(`Document with ${data.nombre} has been deleted..`);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+module.exports = router;
